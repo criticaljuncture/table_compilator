@@ -1,0 +1,13 @@
+*.gem
+Gemfile.lock
+*~
+.bundle
+.byebug_history
+.rvmrc
+.rspec_status
+log/*
+pkg/*
+.DS_Store
+.env
+spec/fixtures/files/performance/*.html
+tmp/*

@@ -1,0 +1,25 @@
+inherit_mode:
+  merge:
+    - Exclude
+
+AllCops:
+  Exclude:
+    - bin/*
+  TargetRubyVersion: 2.7
+  NewCops: enable
+  SuggestExtensions: false  
+
+RSpec/EmptyExampleGroup:
+  Enabled: false
+RSpec/ExampleLength:
+  Enabled: false
+RSpec/MultipleExpectations:
+  Enabled: false
+
+require:
+  - rubocop-performance
+  - rubocop-rspec
+  - standard
+
+inherit_gem:
+  standard: config/base.yml
