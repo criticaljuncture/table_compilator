@@ -110,7 +110,7 @@ module TableCompilator
     end
 
     def columns
-      @described_columns = node&.attr("CDEF")&.split(/\s*,\s*/)
+      @described_columns = parse_cdef(node&.attr("CDEF"))
       @columns ||= TableCompilator::Column.generate(table: self)
     end
 
@@ -295,6 +295,12 @@ module TableCompilator
     end
 
     private
+
+    def parse_cdef(cdef)
+      descriptions = cdef.split(/\s*,\s*/)
+      descriptions << "" if cdef.match?(/,\s*\z/) # 40v26 trailing seperator expected to produce a blank description
+      descriptions
+    end
 
     def table_css_classes
       (mode == :ecfr) ? "gpo_table" : "gpotbl_table"
