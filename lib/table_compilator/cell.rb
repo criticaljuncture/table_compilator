@@ -15,6 +15,7 @@ module TableCompilator
 
       use_content_tag = ((html = body).present? && html.strip.present?) || ((@kind == :header) && Spaces.complex?(html))
       use_content_tag = true if !use_content_tag && node.attributes["I"]&.value == "11" # 7v2
+      use_content_tag = true if preceding&.body&.ends_with?(Compatibility::PLACEHOLDER_HTML_EMPTY_MARKER)
 
       attributes = html_attributes
 
