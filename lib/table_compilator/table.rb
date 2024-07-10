@@ -110,7 +110,7 @@ module TableCompilator
     end
 
     def columns
-      @described_columns = parse_cdef(node&.attr("CDEF"))
+      @described_columns ||= parse_cdef(node&.attr("CDEF"))
       @columns ||= TableCompilator::Column.generate(table: self)
     end
 
@@ -297,7 +297,13 @@ module TableCompilator
     private
 
     def parse_cdef(cdef)
-      descriptions = cdef.split(/\s*,\s*/)
+      descriptions = cdef
+      if mode == :ecfr_bulkdata
+        if descriptions.include?(", ") # 40v8 spaces result in a truncated parsing
+          descriptions = descriptions.split(", ").map.with_index { |v, i| (i == 0) ? v : v.tr("C", "L") }.join(",")
+        end
+      end
+      descriptions = descriptions.split(/\s*,\s*/)
       descriptions << "" if cdef.match?(/,\s*\z/) # 40v26 trailing seperator expected to produce a blank description
       descriptions
     end
