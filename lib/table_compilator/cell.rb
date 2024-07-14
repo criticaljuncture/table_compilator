@@ -223,7 +223,7 @@ module TableCompilator
         end
       end
 
-      if body == BLANK_PLACEHOLDER_CELL_BODY
+      if body == BLANK_PLACEHOLDER_CELL_BODY && (mode == :ecfr_bulkdata)
         override = nil
 
         if !faux?
@@ -236,6 +236,12 @@ module TableCompilator
         if preceding && !preceding.faux? && (preceding.colspan > 1) # faux cell to the right of content
           if preceding&.first_cell_in_row? && (row.node.attr("EXPSTB") == "01")
             override = preceding.alignment unless result == :right
+          elsif preceding&.first_cell_in_row? && (row.node.attr("EXPSTB") == "02") && !last_cell_in_row?
+            override = if preceding.colspan > 2
+              preceding.end_column.alignment
+            else
+              preceding.alignment
+            end
           else
             override = preceding.end_column.alignment unless result == :right
           end
@@ -243,7 +249,12 @@ module TableCompilator
           if last_cell_in_row? && preceding_non_faux
             override = :left
             if ((column_alignment = end_column&.alignment) != :left) || (row.includes_spans? && (column_alignment = second_to_last_column&.alignment) == :center)
-              override = column_alignment
+              if (last_row_in_table? && (row.node&.attr("EXPSTB") == "02")) ||
+                  (second_to_last_row_in_table? && (row.node&.attr("EXPSTB") == "02") && (row.next_row&.node&.attr("EXPSTB") == "02"))
+                # no-op 40v9
+              else
+                override = column_alignment
+              end
             end
           else
 
@@ -371,6 +382,11 @@ module TableCompilator
     def last_row_in_table?
       return false if is_a?(TableCompilator::HeaderCell)
       row.last?
+    end
+
+    def second_to_last_row_in_table?
+      return false if is_a?(TableCompilator::HeaderCell)
+      row.second_to_last?
     end
 
     def bottom_right_cell_in_table?

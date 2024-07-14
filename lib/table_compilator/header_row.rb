@@ -83,5 +83,9 @@ module TableCompilator
     def last?
       index + 1 == table.header_rows.size
     end
+
+    def second_to_last?
+      index + 2 == table.header_rows.size
+    end
   end
 end

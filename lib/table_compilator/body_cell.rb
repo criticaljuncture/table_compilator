@@ -80,7 +80,7 @@ module TableCompilator
         1 + node.attr("A").sub(/^[LRJ]/, "").to_i
       elsif stub? && expanded_stub_width.positive?
         if mode == :ecfr_bulkdata
-          if %w[01 02 03 04 05 06 11 12 13 14 15 21].include?(node.attr("I")) || (last_row_in_table? && (row.cells.last == self)) || table.node.attr("OPTS").include?("/") # "/" breaks prior handling?
+          if %w[01 02 03 04 05 06 11 12 13 14 15 21 22].include?(node.attr("I")) || (last_row_in_table? && (row.cells.last == self)) || table.node.attr("OPTS").include?("/") # "/" breaks prior handling?
             1 + expanded_stub_width
           elsif first_cell_in_row? && (row.node.attr("EXPSTB") == "01")
             2
@@ -92,7 +92,7 @@ module TableCompilator
         end
       elsif node.attr("I") == "28" # "centerhead accross entire table"
         table.num_columns
-      elsif node.attr("I") == "22" && table.node.attr("CDEF") == "s50,xls50" # 12v3
+      elsif node.attr("I") == "22" && (mode == :ecfr_bulkdata) && table.node.attr("CDEF") == "s50,xls50" # 12v3
         2
       elsif row.node.attr("EXPSTB") == "0s1"
         2

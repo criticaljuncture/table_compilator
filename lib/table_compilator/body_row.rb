@@ -118,6 +118,10 @@ module TableCompilator
       index + 1 == table.body_rows.size
     end
 
+    def second_to_last?
+      index + 2 == table.body_rows.size
+    end
+
     def append_missing_cells(cells)
       return [] if cells.empty? || @faux_cells
 
