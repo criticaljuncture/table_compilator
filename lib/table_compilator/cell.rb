@@ -49,6 +49,9 @@ module TableCompilator
       result
     end
 
+    CELL_IGNORABLE_PATTERN = /\A(?:(?:#{Compatibility::CELL_IGNORABLE_MARKERS.join("|")})+(<)|\n#{Compatibility::PLACEHOLDER_HTML_CONTENT_END})/o
+    FIRST_CELL_IGNORABLE_PATTERN = /\A(?:#{Compatibility::FIRST_CELL_IGNORABLE_MARKERS.join("|")})+/o
+
     def body
       result = table.transform(node.to_xml, strip: !(mode == :ecfr_bulkdata))
 
@@ -62,10 +65,13 @@ module TableCompilator
         end
 
         # don't allow markers alone to create a new line between cell open and start of tag enclosed content
-        result.gsub!(/\A(?:#{[Compatibility::PLACEHOLDER_HTML_BELOW_OPENING_MARKER, Compatibility::PLACEHOLDER_HTML_BELOW_PARAGRAPH_MARKER, Compatibility::PLACEHOLDER_HTML_IRREGULAR_MARKER, Compatibility::BELOW_OPENING_MARKER, Compatibility::BELOW_PARAGRAPH_MARKER, Compatibility::IRREGULAR_MARKER].join("|")})+</o, "<")
+        result.gsub!(CELL_IGNORABLE_PATTERN, "\\1")
 
-        # don't allow markers alone to create a new line between cell open and start of any content for first cell in row
-        result.gsub!(/\A(?:#{[Compatibility::PLACEHOLDER_HTML_BELOW_PARAGRAPH_MARKER, Compatibility::BELOW_PARAGRAPH_MARKER].join("|")})+/, "") if first_cell_in_row?
+        if first_cell_in_row?
+          # don't allow markers alone to create a new line between cell open and start of any content for first cell in row
+          result.gsub!(FIRST_CELL_IGNORABLE_PATTERN, "")
+          result.gsub!(CELL_IGNORABLE_PATTERN, "\\1")
+        end
 
         following_content_marker = false
         if (following_content = following&.node&.content) && (
@@ -95,7 +101,7 @@ module TableCompilator
 
     def css_classes
       [
-        alignment
+        effective_alignment
       ] + border_classes
     end
 
@@ -117,7 +123,7 @@ module TableCompilator
       {}.tap do |attributes|
         case mode
         when :ecfr_bulkdata
-          attributes[:align] = alignment
+          attributes[:align] = effective_alignment
 
           attributes[:class] = "gpotbl_cell"
           attributes[:colspan] = colspan if colspan > 1
@@ -148,6 +154,19 @@ module TableCompilator
         end
       end
     end
+
+    def effective_alignment
+      if mode == :ecfr_bulkdata
+        if (index == 2) && (preceding&.colspan&.> 1) && (table.node.attr("CDEF") == "xsl12,r40,6,4,14,14,10,11,10,11,8,12") # 18v1 Appendix C to Part 2
+          :left
+        else
+          alignment
+        end
+      else
+        alignment
+      end
+    end
+    memoize :effective_alignment
 
     def alignment
       effective_code = node.attr("I")
@@ -212,7 +231,9 @@ module TableCompilator
       end
 
       if !result && (mode == :ecfr_bulkdata)
-        result ||= :center unless faux? || last_cell_in_row? # 15v2
+        unless faux? || last_cell_in_row? # 15v2
+          result ||= :center
+        end
       end
 
       if body == Compatibility::PLACEHOLDER_HTML_EM_SPACE
@@ -287,12 +308,20 @@ module TableCompilator
         end
 
         if override
-          result = override
+          result = if !last_cell_in_row? && preceding_non_blank&.node&.attr("A") == "01"
+            wrong_column&.alignment
+          else
+            override
+          end
         else
           calculated = start_column&.alignment || result
 
           if preceding_non_blank&.node&.attr("A") == "01"
-            calculated = :left
+            calculated = if last_cell_in_row?
+              :left
+            else
+              wrong_column&.alignment
+            end
           end
 
           if result != calculated
