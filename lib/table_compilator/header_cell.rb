@@ -32,6 +32,8 @@ module TableCompilator
         options["rowspan_present"] = "true" if rowspan > 1 # "5:2.0.1.1.25.3.137.15.7"
         options["colspan_present"] = "true" if colspan > 1
         table.transform(node.to_xml, strip: false, options: options)
+      elsif mode == :ecfr
+        table.transform(node.to_xml, strip: true)
       else
         table.transform(node.to_xml)
       end

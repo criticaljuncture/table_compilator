@@ -14,13 +14,18 @@ module TableCompilator
     def to_html
       return unless cells.present?
 
-      result = h.safe_join([
+      result = "".html_safe
+      result << "\n" if mode != :ecfr_bulkdata
+
+      result << h.safe_join([
         page_break_row,
         h.content_tag(element_name(:tr)) do
-          cells.each do |cell|
+          cells.each_with_index do |cell, index|
             html = cell.to_html
+            h.concat "\n" if mode != :ecfr_bulkdata
             h.concat html
           end
+          h.concat "\n" if mode != :ecfr_bulkdata
         end
       ])
 

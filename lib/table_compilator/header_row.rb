@@ -63,13 +63,20 @@ module TableCompilator
     end
 
     def to_html
-      h.content_tag(element_name(:tr)) do
+      result = "".html_safe
+      result << "\n" if mode != :ecfr_bulkdata
+
+      result << h.content_tag(element_name(:tr)) do
         html = "".html_safe
         cells.each_with_index do |cell, index|
+          html << "\n" if mode != :ecfr_bulkdata
           html << cell.to_html
         end
+        html << "\n" if mode != :ecfr_bulkdata
         html
       end
+
+      result
     end
 
     def index

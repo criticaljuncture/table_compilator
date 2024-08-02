@@ -32,16 +32,19 @@ module TableCompilator
 
     def to_html
       h.content_tag(element_name(:div), class: "table-wrapper") do
-        html = "".html_safe
-        html << h.content_tag(element_name(:div), width: "100%") do
-          div_html = "".html_safe
-
-          div_html << captions_to_html if (mode == :ecfr_bulkdata) && captions.present?
-          div_html << h.content_tag(element_name(:div), class: "gpotbl_div") do
-            h.content_tag(element_name(:table), border: "1", cellpadding: "1", cellspacing: "1",
+        h.content_tag(element_name(:div), width: "100%") do
+          width_div_html = "".html_safe
+          width_div_html << captions_to_html if (mode == :ecfr_bulkdata) && captions.present?
+          width_div_html << h.content_tag(element_name(:div), class: "gpotbl_div") do
+            div_html = "".html_safe
+            div_html << "\n" if mode == :ecfr
+            div_html << h.content_tag(element_name(:table), border: "1", cellpadding: "1", cellspacing: "1",
               class: table_css_classes, frame: "void", width: "100%") do
               html_table = "".html_safe
-              html_table << captions_to_html if (mode != :ecfr_bulkdata) && captions.present?
+              if (mode != :ecfr_bulkdata) && captions.present?
+                html_table << "\n"
+                html_table << captions_to_html
+              end
 
               html_header_rows = "".html_safe
               header_rows.each do |row|
@@ -51,9 +54,15 @@ module TableCompilator
               html_table << if mode == :ecfr_bulkdata
                 html_header_rows
               else
-                h.content_tag(element_name(:thead)) do
-                  html_header_rows
+                thead_html = "".html_safe
+                thead_html << "\n" if mode != :ecfr_bulkdata
+                thead_html << h.content_tag(element_name(:thead)) do
+                  content = "".html_safe
+                  content << html_header_rows
+                  content << "\n" if mode == :ecfr
+                  content
                 end
+                thead_html
               end
 
               html_body_rows = "".html_safe
@@ -61,23 +70,29 @@ module TableCompilator
                 html_body_rows << row.to_html
               end
 
-              html_table << if mode == :ecfr_bulkdata
-                html_body_rows
+              if mode == :ecfr_bulkdata
+                html_table << html_body_rows
               else
-                h.content_tag(element_name(:tbody)) do
-                  html_body_rows
+                html_table << "\n" if mode != :ecfr_bulkdata
+                html_table << h.content_tag(element_name(:tbody)) do
+                  content = "".html_safe
+                  content << html_body_rows
+                  content << "\n" if mode != :ecfr_bulkdata
+                  content
                 end
+                html_table << "\n" if mode != :ecfr_bulkdata
+                html_table
               end
 
               html_table << footers_to_html if (mode != :ecfr_bulkdata) && footers.present?
               html_table
             end
+            div_html << "\n" if mode == :ecfr
+            div_html
           end
-          div_html << footers_to_html if (mode == :ecfr_bulkdata) && footers.present?
-          div_html
+          width_div_html << footers_to_html if (mode == :ecfr_bulkdata) && footers.present?
+          width_div_html
         end
-
-        html
       end
     end
 
@@ -214,6 +229,7 @@ module TableCompilator
       if %i[ecfr ecfr_bulkdata].include?(mode)
         html.gsub!("<br>", "<br/>")
         html.gsub!("</br>", "")
+        html.gsub!(%r{\s*\n\s*<br/>}, "\n<br/>") if mode == :ecfr
       end
       if mode == :ecfr_bulkdata
         html.gsub!(/§\s/, "") if %i[ecfr_bulkdata].include?(mode) # 30/250.1715 THIN_SPACE

@@ -3,8 +3,14 @@
   <xsl:include href="./text/all.ecfr.html.xslt" />
 
   <xsl:template match="CHED/LI | ENT/LI">
-    <xsl:value-of select="' '" />
-    <br></br>
+    <xsl:text>
+
+    </xsl:text>
+    <xsl:if test="not(preceding-sibling::*[1][self::LI])">
+      <xsl:text>
+</xsl:text>
+    </xsl:if>
+    <br />
     <xsl:apply-templates/>
   </xsl:template>
 

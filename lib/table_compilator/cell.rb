@@ -24,7 +24,7 @@ module TableCompilator
           last_cell_in_row? # 7v11
         )))
         use_content_tag = true
-        if html == BLANK_PLACEHOLDER_CELL_BODY && mode == :ecfr_bulkdata
+        if html == BLANK_PLACEHOLDER_CELL_BODY && ((mode == :ecfr_bulkdata) || (mode == :ecfr))
           html = Compatibility::ADJACENT_MARKER # 20v2 (was Compatibility::IRREGULAR_MARKER)
         end
       end
@@ -39,6 +39,11 @@ module TableCompilator
 
       # don't allow an adjacent cell marker alone to create a new line
       html = Compatibility::ADJACENT_MARKER if blank? && !Spaces.any?(html) && html.include?(Compatibility::PLACEHOLDER_HTML_ADJACENT_CELL_MARKER)
+
+      if !use_content_tag && (mode == :ecfr)
+        use_content_tag = true
+        html = Compatibility::ADJACENT_MARKER
+      end
 
       result << if use_content_tag
         h.content_tag(element_name(element), html, attributes)
@@ -55,7 +60,7 @@ module TableCompilator
     def body
       result = table.transform(node.to_xml, strip: !(mode == :ecfr_bulkdata))
 
-      if mode == :ecfr_bulkdata
+      if mode == :ecfr_bulkdata || mode == :ecfr
         if !last_cell_in_row? || last_row_in_table? || result.include?(Compatibility::ADJACENT_CELL_MARKER)
           if result.include?("<br/>") # don't trim LI lists
             result.gsub!(/\n+\z/, "")
@@ -91,10 +96,8 @@ module TableCompilator
         if result == Compatibility::PLACEHOLDER_HTML_IRREGULAR_MARKER + Compatibility::PLACEHOLDER_HTML_RETURN
           result = BLANK_PLACEHOLDER_CELL_BODY
         end
-
         result = result.html_safe # rubocop:disable Rails/OutputSafety
       end
-
       result
     end
     memoize :body
