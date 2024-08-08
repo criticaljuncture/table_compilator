@@ -118,7 +118,7 @@ module TableCompilator
     end
 
     def border_left
-      return unless start_column.first?
+      return unless start_column&.first?
 
       table.rules.include?(:side) ? :single : nil
     end

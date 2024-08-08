@@ -66,7 +66,6 @@ module TableCompilator
       set_column_indices(@cells)
       @cells = append_missing_cells(@cells)
 
-      @cells = @cells.select(&:start_column) unless mode == :ecfr_bulkdata
       @cells
     end
 
