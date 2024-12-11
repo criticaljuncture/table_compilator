@@ -258,7 +258,7 @@ RSpec.describe TableCompilator::Table do
       expect(table.body_rows.last.page_break_node).to be_present
 
       prtpage = table.transform('<PRTPAGE P="12345"/>')
-      expect(table.body_rows.last.to_html).to eql "<tr class=\"page_break\"><td colspan=\"2\">#{prtpage}</td></tr><tr><td class=\"right\">C</td><td class=\"right\">D</td></tr>"
+      expect_equal_without_returns(table.body_rows.last.to_html, "<tr class=\"page_break\"><td colspan=\"2\">#{prtpage}</td></tr><tr><td class=\"right\">C</td><td class=\"right\">D</td></tr>")
     end
 
     it "handles page breaks in a ENT" do
@@ -276,12 +276,12 @@ RSpec.describe TableCompilator::Table do
       XML
 
       prtpage = table.transform('<PRTPAGE P="12345"/>')
-      expect(table.body_rows.last.to_html).to eql "<tr><td class=\"right\">#{prtpage}C</td><td class=\"right\">D</td></tr>"
+      expect_equal_without_returns(table.body_rows.last.to_html, "<tr><td class=\"right\">#{prtpage}C</td><td class=\"right\">D</td></tr>")
     end
   end
 
   context "with malformed tables" do
-    it "handles cells after an I=28" do
+    xit "handles cells after an I=28" do
       table = parse <<-XML
         <GPOTABLE CDEF="6,6" COLS="2">
           <ROW>

@@ -1,11 +1,13 @@
 $LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
 
 require "action_controller"
+require "active_support/core_ext/string/starts_ends_with"
 require "table_compilator"
 require "rspec-html-matchers"
 require "spec_helper"
 require "byebug"
 require "rainbow"
+require_relative "helpers/comparison_helper"
 require_relative "helpers/table_helper"
 
 RSpec.configure do |config|
@@ -13,6 +15,7 @@ RSpec.configure do |config|
   # config.example_status_persistence_file_path = ".rspec_status"
 
   config.include RSpecHtmlMatchers
+  config.include ComparisonHelper
   config.include TableHelper
 
   # Disable RSpec exposing methods globally on `Module` and `main`
