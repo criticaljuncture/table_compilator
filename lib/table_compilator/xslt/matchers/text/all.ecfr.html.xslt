@@ -4,6 +4,7 @@
   <xsl:output method="html" omit-xml-declaration="yes" />
 
   <xsl:include href="./diacriticals.ecfr.html.xslt" />
+  <xsl:include href="./fractions.ecfr.html.xslt" />
   <xsl:include href="./html_tags.html.xslt" />
   <xsl:include href="./print_page.html.xslt" />
   <xsl:include href="./text_nodes.html.xslt" />
