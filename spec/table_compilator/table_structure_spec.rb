@@ -281,7 +281,7 @@ RSpec.describe TableCompilator::Table do
   end
 
   context "with malformed tables" do
-    xit "handles cells after an I=28" do
+    xit "handles cells after an I=28" do # rubocop:disable RSpec/PendingWithoutReason
       table = parse <<-XML
         <GPOTABLE CDEF="6,6" COLS="2">
           <ROW>
