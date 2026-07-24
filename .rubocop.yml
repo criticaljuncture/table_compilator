@@ -16,9 +16,11 @@ RSpec/ExampleLength:
 RSpec/MultipleExpectations:
   Enabled: false
 
-require:
+plugins:
   - rubocop-performance
   - rubocop-rspec
+
+require:
   - standard
 
 inherit_gem:

@@ -20,9 +20,9 @@ module TableCompilator
       attributes = html_attributes
 
       if !use_content_tag && (attributes[:style].present? || (!faux? && (
-          ((row.cells.count - (row.faux_cells || 0)) == 1) ||
-          last_cell_in_row? # 7v11
-        )))
+        ((row.cells.count - (row.faux_cells || 0)) == 1) ||
+        last_cell_in_row? # 7v11
+      )))
         use_content_tag = true
         if html == BLANK_PLACEHOLDER_CELL_BODY && ((mode == :ecfr_bulkdata) || (mode == :ecfr))
           html = Compatibility::ADJACENT_MARKER # 20v2 (was Compatibility::IRREGULAR_MARKER)
@@ -110,15 +110,15 @@ module TableCompilator
 
     def blank?
       @blank ||= !!(
-          body.blank? || (
-            (mode == :ecfr_bulkdata) &&
-            body.gsub(Compatibility::IRREGULAR_MARKER, "")
-                .gsub(Compatibility::PLACEHOLDER_HTML_IRREGULAR_MARKER, "")
-                .gsub(Compatibility::PLACEHOLDER_HTML_ADJACENT_CELL_MARKER, "")
-                .gsub(Compatibility::PLACEHOLDER_HTML_BELOW_OPENING_MARKER, "")
-                .blank?
-          )
+        body.blank? || (
+          (mode == :ecfr_bulkdata) &&
+          body.gsub(Compatibility::IRREGULAR_MARKER, "")
+              .gsub(Compatibility::PLACEHOLDER_HTML_IRREGULAR_MARKER, "")
+              .gsub(Compatibility::PLACEHOLDER_HTML_ADJACENT_CELL_MARKER, "")
+              .gsub(Compatibility::PLACEHOLDER_HTML_BELOW_OPENING_MARKER, "")
+              .blank?
         )
+      )
     end
     memoize :blank?
 
@@ -296,17 +296,17 @@ module TableCompilator
             override = preceding.alignment
           end
         elsif faux? && (
-            (
-              preceding&.body&.ends_with?("\n") &&
-              (row&.cells&.first&.node&.attr("I") != "22") &&
-              (row&.prior_row&.cells&.first&.node&.attr("I") == "22") &&
-              (row&.next_row&.cells&.first&.node&.attr("I") == "22")
-            ) || (
-              preceding&.body&.ends_with?("\n") &&
-              (row&.cells&.first&.node&.attr("I") == "22") &&
-              (row&.prior_row&.prior_row&.cells&.first&.node&.attr("I") == "22")
-            )
-          ) # 14v2 faux cell after hard return irregularity
+          (
+            preceding&.body&.ends_with?("\n") &&
+            (row&.cells&.first&.node&.attr("I") != "22") &&
+            (row&.prior_row&.cells&.first&.node&.attr("I") == "22") &&
+            (row&.next_row&.cells&.first&.node&.attr("I") == "22")
+          ) || (
+            preceding&.body&.ends_with?("\n") &&
+            (row&.cells&.first&.node&.attr("I") == "22") &&
+            (row&.prior_row&.prior_row&.cells&.first&.node&.attr("I") == "22")
+          )
+        ) # 14v2 faux cell after hard return irregularity
           override = start_column&.alignment
         end
 
