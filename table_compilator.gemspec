@@ -31,7 +31,11 @@ Gem::Specification.new do |spec|
   spec.add_dependency "activesupport"
   spec.add_dependency "htmlentities"
   spec.add_dependency "memoist"
-  spec.add_dependency "reference_parser"
+
+  # Reference parsing in table content is available when the reference_parser
+  # gem is installed. However we don't bundle this as a dependency. If you want
+  # to use reference parsing make sure to require it in your code.
+  spec.add_development_dependency "reference_parser"
 
   spec.add_development_dependency "byebug"
   spec.add_development_dependency "parallel_tests"
@@ -44,6 +48,17 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rubocop-rspec"
   spec.add_development_dependency "standard", ">= 1.12.1"
   spec.add_development_dependency "turbo_tests"
+
+  spec.post_install_message = '
+    Some features of the table_compilator gem support parsing regulatory
+    references in table content.
+
+    To use these features you will need to install the reference_parser gem in
+    your application. In order to minimize dependencies and code that is loaded
+    this is not a default dependency of the table_compilator gem.
+
+    See the README for details of these features.
+  '
 
   # Uncomment to register a new dependency of your gem
   # spec.add_dependency "example-gem", "~> 1.0"
