@@ -4,7 +4,6 @@ source "https://rubygems.org"
 gemspec
 
 gem "rake"
-gem "reference_parser", github: "criticaljuncture/reference_parser", branch: "main"
 gem "parallel_tests"
 gem "rspec"
 gem "rspec_junit_formatter"

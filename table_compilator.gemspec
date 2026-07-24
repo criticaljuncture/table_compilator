@@ -31,7 +31,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency "activesupport"
   spec.add_dependency "htmlentities"
   spec.add_dependency "memoist"
-  spec.add_dependency "reference_parser"
 
   spec.add_development_dependency "byebug"
   spec.add_development_dependency "parallel_tests"

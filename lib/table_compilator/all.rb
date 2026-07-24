@@ -1,5 +1,7 @@
 require_relative "version"
 
+require_relative "spaces"
+
 require_relative "compatibility"
 require_relative "cell"
 require_relative "row"
