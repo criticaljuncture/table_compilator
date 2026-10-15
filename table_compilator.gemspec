@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.summary = "Common public table parsing & rendering."
   spec.description = "Common public table parsing & rendering."
   spec.homepage = "https://github.com/criticaljuncture/table_compilator"
-  spec.required_ruby_version = Gem::Requirement.new(">= 3.0.0")
+  spec.required_ruby_version = Gem::Requirement.new(">= 3.4")
 
   spec.metadata["allowed_push_host"] = ""
 
