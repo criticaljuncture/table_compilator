@@ -39,7 +39,7 @@ module TableCompilator
             div_html = "".html_safe
             div_html << "\n" if mode == :ecfr
             div_html << h.content_tag(element_name(:table), border: "1", cellpadding: "1", cellspacing: "1",
-              class: table_css_classes, frame: "void", width: "100%") do
+              class: table_css_classes, frame: "void", width: "100%", **table_data_attributes) do
               html_table = "".html_safe
               if (mode != :ecfr_bulkdata) && captions.present?
                 html_table << "\n"
@@ -326,6 +326,10 @@ module TableCompilator
 
     def table_css_classes
       (mode == :ecfr) ? "gpo_table" : "gpotbl_table"
+    end
+
+    def table_data_attributes
+      (mode == :ecfr) ? {"data-point-width": total_width_in_points} : {} # pass-through width to hint column layout
     end
   end
 end

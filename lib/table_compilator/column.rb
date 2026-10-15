@@ -18,11 +18,10 @@ module TableCompilator
     end
 
     def width_in_points
-      if /\D/.match?(code)
-        code.gsub(/\D/, "").to_i
+      if figure?
+        code[/\A\d+/].to_i * 5 # figures, ex: "12", "12C", "8L"
       else
-        # figure columns are given as the number figures, not in points
-        code.to_i * 5
+        code.gsub(/\D/, "").to_i # points, ex: "s50", "r45", "xl2"
       end
     end
 
