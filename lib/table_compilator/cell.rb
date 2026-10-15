@@ -96,7 +96,7 @@ module TableCompilator
         if result == Compatibility::PLACEHOLDER_HTML_IRREGULAR_MARKER + Compatibility::PLACEHOLDER_HTML_RETURN
           result = BLANK_PLACEHOLDER_CELL_BODY
         end
-        result = result.html_safe # rubocop:disable Rails/OutputSafety
+        result = result.html_safe
       end
       result
     end
